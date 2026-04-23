@@ -1,0 +1,489 @@
+# Claude Code - pre-approved read-only / non-destructive shell commands
+# One entry per line. Blank lines and lines starting with # are ignored by the sync script.
+# Run sync-claude-permissions.sh to apply changes to ~/.claude/settings.json.
+#
+# Format: either a bare tool name (Read, Glob, Grep) or Bash(<prefix>*)
+# Bash rules use prefix matching: Bash(git log*) allows "git log", "git log --oneline", etc.
+# Caveat: prefix matching cannot restrict flags, only command prefixes.
+#
+# Excluded intentionally (destructive or can exec arbitrary commands):
+#   cp mv rm rmdir mkdir ln unlink chmod chown chgrp touch truncate shred dd tee
+#   install mkfifo mknod sync csplit split patch ed ex kill renice at cron
+#   xargs nohup nice stdbuf timeout chroot m4 ipcrm tar unzip zip
+
+# ── Native Claude Code tools ─────────────────────────────────────────────────
+
+Read
+Glob
+Grep
+WebSearch
+WebFetch
+Monitor
+ListMcpResourcesTool
+ReadMcpResourceTool
+TaskGet
+TaskList
+TaskOutput
+CronList
+
+# ── MCP: GitHub (read-only) ───────────────────────────────────────────────────
+
+mcp__github__get_me
+mcp__github__get_commit
+mcp__github__get_file_contents
+mcp__github__get_label
+mcp__github__get_latest_release
+mcp__github__get_release_by_tag
+mcp__github__get_tag
+mcp__github__get_team_members
+mcp__github__get_teams
+mcp__github__issue_read
+mcp__github__list_branches
+mcp__github__list_commits
+mcp__github__list_issue_types
+mcp__github__list_issues
+mcp__github__list_pull_requests
+mcp__github__list_releases
+mcp__github__list_tags
+mcp__github__pull_request_read
+mcp__github__search_code
+mcp__github__search_issues
+mcp__github__search_pull_requests
+mcp__github__search_repositories
+mcp__github__search_users
+
+# ── MCP: Slack (read-only) ────────────────────────────────────────────────────
+
+mcp__claude_ai_Slack__slack_read_canvas
+mcp__claude_ai_Slack__slack_read_channel
+mcp__claude_ai_Slack__slack_read_thread
+mcp__claude_ai_Slack__slack_read_user_profile
+mcp__claude_ai_Slack__slack_search_channels
+mcp__claude_ai_Slack__slack_search_public
+mcp__claude_ai_Slack__slack_search_public_and_private
+mcp__claude_ai_Slack__slack_search_users
+
+# ── File system inspection ───────────────────────────────────────────────────
+
+Bash(ls *)
+Bash(ls)
+Bash(dir *)
+Bash(dir)
+Bash(vdir *)
+Bash(vdir)
+Bash(find *)
+Bash(stat *)
+Bash(file *)
+Bash(du *)
+Bash(du)
+Bash(df *)
+Bash(df)
+Bash(tree *)
+Bash(realpath *)
+Bash(dirname *)
+Bash(basename *)
+Bash(readlink *)
+Bash(pathchk *)
+Bash(lsblk *)
+Bash(lsblk)
+Bash(blkid *)
+
+# ── File reading ─────────────────────────────────────────────────────────────
+
+Bash(cat *)
+Bash(tac *)
+Bash(head *)
+Bash(tail *)
+Bash(wc *)
+Bash(less *)
+Bash(more *)
+Bash(bat *)
+Bash(nl *)
+Bash(od *)
+Bash(xxd *)
+Bash(hexdump *)
+
+# ── Text processing ───────────────────────────────────────────────────────────
+# Note: awk/sed can technically write files but only via explicit redirection;
+# acceptable risk for a development workflow.
+
+Bash(grep *)
+Bash(egrep *)
+Bash(fgrep *)
+Bash(rg *)
+Bash(ag *)
+Bash(sort *)
+Bash(uniq *)
+Bash(cut *)
+Bash(tr *)
+Bash(diff *)
+Bash(diff3 *)
+Bash(cmp *)
+Bash(comm *)
+Bash(awk *)
+Bash(sed *)
+Bash(fmt *)
+Bash(fold *)
+Bash(expand *)
+Bash(unexpand *)
+Bash(paste *)
+Bash(join *)
+Bash(pr *)
+Bash(tsort *)
+Bash(ptx *)
+Bash(numfmt *)
+Bash(shuf *)
+Bash(iconv *)
+Bash(jq *)
+Bash(yq *)
+Bash(echo *)
+Bash(printf *)
+
+# ── Checksums and encoding ────────────────────────────────────────────────────
+
+Bash(md5sum *)
+Bash(sha1sum *)
+Bash(sha224sum *)
+Bash(sha256sum *)
+Bash(sha384sum *)
+Bash(sha512sum *)
+Bash(b2sum *)
+Bash(cksum *)
+Bash(sum *)
+Bash(base32 *)
+Bash(base64 *)
+Bash(basenc *)
+
+# ── Binary / object file inspection ─────────────────────────────────────────
+
+Bash(strings *)
+Bash(nm *)
+Bash(objdump *)
+Bash(readelf *)
+Bash(size *)
+Bash(addr2line *)
+Bash(otool *)
+Bash(ldd *)
+
+# ── Compressed file reading (stdout only) ────────────────────────────────────
+
+Bash(zcat *)
+Bash(bzcat *)
+Bash(xzcat *)
+Bash(zstdcat *)
+
+# ── Git (read-only subcommands) ───────────────────────────────────────────────
+# Destructive git ops (commit, push, add, reset, checkout, fetch, merge,
+# rebase, pull, stash pop, clean, rm) are intentionally excluded.
+
+Bash(git status*)
+Bash(git log*)
+Bash(git diff*)
+Bash(git show*)
+Bash(git blame*)
+Bash(git branch*)
+Bash(git tag*)
+Bash(git describe*)
+Bash(git rev-parse*)
+Bash(git ls-files*)
+Bash(git ls-tree*)
+Bash(git shortlog*)
+Bash(git grep*)
+Bash(git reflog*)
+Bash(git stash list*)
+Bash(git remote*)
+Bash(git config --list*)
+Bash(git config --get*)
+
+# ── GitHub CLI (read-only operations) ────────────────────────────────────────
+
+Bash(gh pr list*)
+Bash(gh pr view*)
+Bash(gh pr diff*)
+Bash(gh pr checks*)
+Bash(gh issue list*)
+Bash(gh issue view*)
+Bash(gh repo view*)
+Bash(gh run list*)
+Bash(gh run view*)
+Bash(gh run download*)
+Bash(gh auth status*)
+Bash(gh release list*)
+Bash(gh release view*)
+
+# ── Docker (read-only operations) ────────────────────────────────────────────
+
+Bash(docker ps*)
+Bash(docker images*)
+Bash(docker inspect*)
+Bash(docker logs*)
+Bash(docker stats*)
+Bash(docker network ls*)
+Bash(docker network inspect*)
+Bash(docker volume ls*)
+Bash(docker volume inspect*)
+Bash(docker info*)
+Bash(docker version*)
+Bash(docker-compose ps*)
+Bash(docker-compose config*)
+
+# ── Process and system info ───────────────────────────────────────────────────
+
+Bash(ps *)
+Bash(ps)
+Bash(pgrep *)
+Bash(pstree *)
+Bash(lsof *)
+Bash(lsof)
+Bash(ipcs *)
+Bash(ipcs)
+Bash(top *)
+Bash(vmstat *)
+Bash(vmstat)
+Bash(iostat *)
+Bash(iostat)
+Bash(free *)
+Bash(free)
+Bash(vm_stat)
+Bash(sysctl *)
+Bash(dmesg *)
+Bash(dmesg)
+Bash(time *)
+Bash(sleep *)
+
+# ── System identity ───────────────────────────────────────────────────────────
+
+Bash(uname *)
+Bash(uname)
+Bash(arch)
+Bash(hostname)
+Bash(hostid)
+Bash(nproc)
+Bash(whoami)
+Bash(id *)
+Bash(id)
+Bash(logname)
+Bash(groups)
+Bash(users)
+Bash(who *)
+Bash(who)
+Bash(w)
+Bash(uptime)
+Bash(tty)
+Bash(date *)
+Bash(date)
+Bash(cal *)
+Bash(cal)
+
+# ── Environment and shell introspection ───────────────────────────────────────
+
+Bash(env)
+Bash(printenv *)
+Bash(printenv)
+Bash(which *)
+Bash(type *)
+Bash(command -v *)
+Bash(pwd)
+Bash(expr *)
+Bash(test *)
+Bash(true)
+Bash(false)
+Bash(seq *)
+Bash(factor *)
+Bash(bc *)
+Bash(tput *)
+Bash(stty -a*)
+Bash(stty -g*)
+
+# ── macOS-specific ────────────────────────────────────────────────────────────
+
+Bash(sw_vers)
+Bash(sw_vers *)
+Bash(defaults read *)
+Bash(xcode-select *)
+Bash(mdfind *)
+Bash(mdls *)
+Bash(plutil *)
+Bash(pbpaste)
+Bash(system_profiler *)
+Bash(launchctl list*)
+Bash(pmset -g*)
+Bash(networksetup -listallnetworkservices*)
+Bash(scutil *)
+
+# ── Network / DNS ─────────────────────────────────────────────────────────────
+# curl/wget excluded — can mutate external state via POST/PUT
+
+Bash(ping *)
+Bash(traceroute *)
+Bash(tracepath *)
+Bash(dig *)
+Bash(nslookup *)
+Bash(host *)
+Bash(whois *)
+Bash(netstat *)
+Bash(netstat)
+Bash(ss *)
+Bash(ss)
+Bash(ifconfig *)
+Bash(ifconfig)
+Bash(ip *)
+Bash(arp *)
+Bash(arp)
+Bash(route)
+
+# ── Package managers (list/info only) ────────────────────────────────────────
+# Destructive brew/npm operations (install, uninstall, update, etc.) excluded.
+
+Bash(brew list*)
+Bash(brew info *)
+Bash(brew search *)
+Bash(brew outdated*)
+Bash(brew deps *)
+Bash(brew leaves*)
+Bash(brew uses *)
+Bash(brew doctor*)
+Bash(npm list*)
+Bash(npm ls *)
+Bash(npm info *)
+Bash(npm view *)
+Bash(npm outdated*)
+Bash(npm audit*)
+Bash(bun pm ls*)
+Bash(pip list*)
+Bash(pip show *)
+Bash(pip freeze*)
+Bash(pip check*)
+
+# ── Debian / Ubuntu (apt, dpkg — read-only) ──────────────────────────────────
+
+Bash(dpkg -l *)
+Bash(dpkg -L *)
+Bash(dpkg -s *)
+Bash(dpkg -S *)
+Bash(dpkg -p *)
+Bash(dpkg --get-selections*)
+Bash(dpkg-query *)
+Bash(apt list*)
+Bash(apt show *)
+Bash(apt search *)
+Bash(apt-cache show *)
+Bash(apt-cache search *)
+Bash(apt-cache policy *)
+Bash(apt-cache depends *)
+Bash(apt-cache rdepends *)
+Bash(apt-cache showpkg *)
+
+# ── RHEL / Fedora / CentOS (rpm, dnf, yum — read-only) ───────────────────────
+
+Bash(rpm -q *)
+Bash(rpm -qa*)
+Bash(rpm -ql *)
+Bash(rpm -qi *)
+Bash(rpm -qf *)
+Bash(rpm -qR *)
+Bash(rpm -qd *)
+Bash(rpm -qc *)
+Bash(dnf list*)
+Bash(dnf info *)
+Bash(dnf search *)
+Bash(dnf repolist*)
+Bash(dnf history*)
+Bash(dnf deplist *)
+Bash(dnf provides *)
+Bash(yum list*)
+Bash(yum info *)
+Bash(yum search *)
+Bash(yum repolist*)
+Bash(yum deplist *)
+Bash(yum provides *)
+Bash(repoquery *)
+
+# ── Arch Linux (pacman — read-only) ──────────────────────────────────────────
+
+Bash(pacman -Q*)
+Bash(pacman -Ql *)
+Bash(pacman -Qi *)
+Bash(pacman -Qo *)
+Bash(pacman -Ss *)
+Bash(pacman -Si *)
+Bash(pacman -Fl *)
+Bash(pactree *)
+Bash(pkgfile *)
+Bash(expac *)
+
+# ── Snap / Flatpak ────────────────────────────────────────────────────────────
+
+Bash(snap list*)
+Bash(snap info *)
+Bash(snap find *)
+Bash(snap version)
+Bash(flatpak list*)
+Bash(flatpak info *)
+Bash(flatpak search *)
+Bash(flatpak remote-list*)
+
+# ── systemd (read-only queries) ───────────────────────────────────────────────
+
+Bash(systemctl status *)
+Bash(systemctl list-units*)
+Bash(systemctl list-unit-files*)
+Bash(systemctl list-timers*)
+Bash(systemctl list-sockets*)
+Bash(systemctl list-jobs*)
+Bash(systemctl is-active *)
+Bash(systemctl is-enabled *)
+Bash(systemctl is-failed *)
+Bash(systemctl cat *)
+Bash(systemctl show *)
+Bash(journalctl *)
+Bash(journalctl)
+Bash(loginctl list-sessions*)
+Bash(loginctl list-users*)
+Bash(loginctl show *)
+Bash(hostnamectl)
+Bash(timedatectl)
+Bash(localectl)
+Bash(networkctl *)
+Bash(networkctl)
+Bash(resolvectl *)
+Bash(resolvectl)
+Bash(machinectl list*)
+
+# ── Hardware inspection ───────────────────────────────────────────────────────
+
+Bash(lsmod)
+Bash(lspci *)
+Bash(lspci)
+Bash(lsusb *)
+Bash(lsusb)
+Bash(lscpu *)
+Bash(lscpu)
+Bash(lshw *)
+Bash(dmidecode *)
+Bash(hwinfo *)
+Bash(inxi *)
+
+# ── Runtime version checks ────────────────────────────────────────────────────
+
+Bash(node --version)
+Bash(node -v)
+Bash(python3 --version)
+Bash(python3 -V)
+Bash(python --version)
+Bash(python -V)
+Bash(bun --version)
+Bash(bun -v)
+Bash(npm --version)
+Bash(npm -v)
+Bash(ruby --version)
+Bash(ruby -v)
+Bash(go version)
+Bash(rustc --version)
+Bash(cargo --version)
+Bash(java --version)
+Bash(javac --version)
+Bash(gcc --version)
+Bash(clang --version)
+Bash(make --version)
+Bash(cmake --version)

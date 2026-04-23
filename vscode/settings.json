@@ -1,0 +1,13 @@
+{
+  "workbench.colorTheme": "Monokai Dimmed",
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "vim.vimrc.enable": true,
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "vim.useSystemClipboard": true,
+  "github.copilot.nextEditSuggestions.enabled": true
+}
