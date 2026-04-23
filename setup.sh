@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -e
+
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export DOTFILES_DIR
+
+# ── Universal dotfile symlinks ────────────────────────────────────────────────
+
+ln -sf "$DOTFILES_DIR/.zshrc"     "$HOME/.zshrc"
+ln -sf "$DOTFILES_DIR/.vimrc"     "$HOME/.vimrc"
+ln -sf "$DOTFILES_DIR/.p10k.zsh"  "$HOME/.p10k.zsh"
+
+mkdir -p "$HOME/.ssh"
+chmod 700 "$HOME/.ssh"
+ln -sf "$DOTFILES_DIR/.ssh_config" "$HOME/.ssh/config"
+
+# ── Dispatch to system-specific setup ────────────────────────────────────────
+
+case "$(uname -s)" in
+  Darwin)
+    bash "$DOTFILES_DIR/macos/setup.sh"
+    ;;
+  Linux)
+    if [ ! -f /etc/os-release ]; then
+      echo "Cannot detect Linux distribution: /etc/os-release not found"
+      exit 1
+    fi
+    . /etc/os-release
+    case "$ID $ID_LIKE" in
+      *debian*|*ubuntu*)
+        bash "$DOTFILES_DIR/debian/setup.sh"
+        ;;
+      *rhel*|*fedora*|*centos*|*rocky*|*almalinux*)
+        bash "$DOTFILES_DIR/redhat/setup.sh"
+        ;;
+      *arch*|*manjaro*)
+        bash "$DOTFILES_DIR/arch/setup.sh"
+        ;;
+      *)
+        echo "Unsupported Linux distribution: $ID"
+        exit 1
+        ;;
+    esac
+    ;;
+  *)
+    echo "Unsupported OS: $(uname -s)"
+    exit 1
+    ;;
+esac
+
+echo "Done."
