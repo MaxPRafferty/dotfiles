@@ -4,15 +4,21 @@ set -e
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export DOTFILES_DIR
 
-# ── Universal dotfile symlinks ────────────────────────────────────────────────
+# Tier: universal | baseline | full  (default: baseline)
+TIER="${1:-baseline}"
+export TIER
 
-ln -sf "$DOTFILES_DIR/.zshrc"     "$HOME/.zshrc"
-ln -sf "$DOTFILES_DIR/.vimrc"     "$HOME/.vimrc"
-ln -sf "$DOTFILES_DIR/.p10k.zsh"  "$HOME/.p10k.zsh"
+echo "Installing dotfiles — tier: $TIER"
+
+# ── Universal dotfile symlinks (all tiers) ────────────────────────────────────
+
+ln -sf "$DOTFILES_DIR/tool_config/zsh/.zshrc"       "$HOME/.zshrc"
+ln -sf "$DOTFILES_DIR/tool_config/vim/.vimrc"       "$HOME/.vimrc"
+ln -sf "$DOTFILES_DIR/tool_config/p10k/.p10k.zsh"   "$HOME/.p10k.zsh"
 
 mkdir -p "$HOME/.ssh"
 chmod 700 "$HOME/.ssh"
-ln -sf "$DOTFILES_DIR/.ssh_config" "$HOME/.ssh/config"
+ln -sf "$DOTFILES_DIR/tool_config/ssh/config" "$HOME/.ssh/config"
 
 # ── Dispatch to system-specific setup ────────────────────────────────────────
 
@@ -48,4 +54,4 @@ case "$(uname -s)" in
     ;;
 esac
 
-echo "Done."
+echo "Done. (tier: $TIER)"
