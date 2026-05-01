@@ -56,6 +56,10 @@ done
 # ── [baseline+] Apps (Homebrew Cask — preferred over system packages) ─────────
 
 if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
+  # ── [baseline+] System preferences ───────────────────────────────────────────
+
+  defaults write -g com.apple.swipescrolldirection -bool FALSE
+
   brew install --cask visual-studio-code
   brew install --cask google-chrome
   brew install --cask slack
@@ -106,7 +110,6 @@ fi
 # ── macOS system preferences ─────────────────────────────────────────────────
 
 sudo defaults write /Library/Preferences/.GlobalPreferences.plist _HIEnableThemeSwitchHotKey -bool true
-defaults write -g com.apple.swipescrolldirection -bool FALSE
 defaults write com.apple.Dock autohide -bool TRUE
 defaults write com.apple.finder _FXShowPosixPathInTitle -bool YES
 defaults write -g AppleInterfaceStyle Dark

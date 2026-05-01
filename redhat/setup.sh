@@ -4,6 +4,23 @@ set -e
 DOTFILES_DIR="${DOTFILES_DIR:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"}"
 TIER="${TIER:-baseline}"
 
+set_gsettings_bool() {
+  local schema="$1"
+  local key="$2"
+  local value="$3"
+
+  if command -v gsettings >/dev/null 2>&1 && gsettings writable "$schema" "$key" >/dev/null 2>&1; then
+    gsettings set "$schema" "$key" "$value" || true
+  fi
+}
+
+configure_reverse_scroll_direction() {
+  set_gsettings_bool org.gnome.desktop.peripherals.mouse natural-scroll false
+  set_gsettings_bool org.gnome.desktop.peripherals.touchpad natural-scroll false
+  set_gsettings_bool org.cinnamon.desktop.peripherals.mouse natural-scroll false
+  set_gsettings_bool org.cinnamon.desktop.peripherals.touchpad natural-scroll false
+}
+
 # ── [universal] System update ─────────────────────────────────────────────────
 
 sudo dnf update -y
@@ -81,6 +98,10 @@ fc-cache -f
 if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   sudo dnf install -y flatpak
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+  # ── [baseline+] System preferences ───────────────────────────────────────────
+
+  configure_reverse_scroll_direction
 
   # GUI apps via Flatpak
   flatpak install -y flathub com.visualstudio.code
