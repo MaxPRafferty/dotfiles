@@ -1,5 +1,14 @@
 let mapleader = "\\"
 
+" Powerline statusline. The setup script installs the plugin as a native Vim
+" package under ~/.vim/pack/powerline/start/powerline.
+set laststatus=2
+set t_Co=256
+set rtp+=~/.vim/pack/powerline/start/powerline/powerline/bindings/vim
+silent! python3 from powerline.vim import setup as powerline_setup
+silent! python3 powerline_setup()
+silent! python3 del powerline_setup
+
 "quicknav
 nmap <C-h> 5h
 nmap <C-j> 5j
@@ -39,5 +48,4 @@ nmap <S-Space> a_<Esc>r
 
 
 cabbrev E Explore
-
 

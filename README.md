@@ -45,9 +45,13 @@ low footprint. Only terminal tools — no GUI apps.
 |------|---------|--------|
 | git | Version control | — |
 | vim | Terminal editor | `tool_config/vim/` |
+| Powerline for Vim | Vim statusline | `tool_config/vim/` |
+| bash | Shell | `tool_config/bash/` |
+| powerline-shell | Bash prompt | `tool_config/bash/` |
 | zsh | Shell | `tool_config/zsh/` |
 | oh-my-zsh | Zsh framework | `tool_config/zsh/` |
 | Powerlevel10k | Zsh prompt theme | `tool_config/p10k/` |
+| MesloLGS NF | Powerline-compatible font | — |
 
 ---
 
@@ -94,6 +98,7 @@ dotfiles/
 ├── arch/setup.sh         # Arch Linux-specific installs
 ├── tool_config/
 │   ├── vim/              # Vim config
+│   ├── bash/             # Bash config
 │   ├── zsh/              # Zsh / oh-my-zsh config
 │   ├── p10k/             # Powerlevel10k config
 │   ├── vscode/           # VSCode settings

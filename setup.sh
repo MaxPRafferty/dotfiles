@@ -13,6 +13,8 @@ echo "Installing dotfiles — tier: $TIER"
 # ── Universal dotfile symlinks (all tiers) ────────────────────────────────────
 
 ln -sf "$DOTFILES_DIR/tool_config/zsh/.zshrc"       "$HOME/.zshrc"
+ln -sf "$DOTFILES_DIR/tool_config/bash/.bashrc"     "$HOME/.bashrc"
+ln -sf "$DOTFILES_DIR/tool_config/bash/.bash_profile" "$HOME/.bash_profile"
 ln -sf "$DOTFILES_DIR/tool_config/vim/.vimrc"       "$HOME/.vimrc"
 ln -sf "$DOTFILES_DIR/tool_config/p10k/.p10k.zsh"   "$HOME/.p10k.zsh"
 

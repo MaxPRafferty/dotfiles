@@ -14,6 +14,8 @@ sudo pacman -S --noconfirm \
   git \
   curl \
   wget \
+  python \
+  python-pipx \
   zsh \
   vim \
   base-devel \
@@ -53,6 +55,20 @@ if [[ ! -d "$P10K_DIR/.git" ]]; then
   fi
 fi
 ln -sf "$DOTFILES_DIR/tool_config/p10k/.p10k.zsh" "$HOME/.p10k.zsh"
+
+# ── [universal] Bash prompt and Vim statusline ────────────────────────────────
+
+pipx install powerline-shell || pipx upgrade powerline-shell
+
+POWERLINE_VIM_DIR="$HOME/.vim/pack/powerline/start/powerline"
+mkdir -p "$(dirname "$POWERLINE_VIM_DIR")"
+if [[ ! -d "$POWERLINE_VIM_DIR/.git" ]]; then
+  if [[ -e "$POWERLINE_VIM_DIR" ]]; then
+    echo "$POWERLINE_VIM_DIR already exists but is not a git checkout; skipping Vim Powerline clone"
+  else
+    git clone --depth=1 https://github.com/powerline/powerline.git "$POWERLINE_VIM_DIR"
+  fi
+fi
 
 # ── [universal] Powerline fonts ───────────────────────────────────────────────
 
