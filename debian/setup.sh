@@ -4,38 +4,78 @@ set -e
 DOTFILES_DIR="${DOTFILES_DIR:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"}"
 TIER="${TIER:-baseline}"
 
-# ── [universal] System update ─────────────────────────────────────────────────
+require_sudo() {
+  if sudo -n true 2>/dev/null; then
+    return
+  fi
 
-sudo apt update && sudo apt upgrade -y
+  if [[ ! -t 0 ]]; then
+    echo "This setup needs sudo for apt and shell configuration."
+    echo "Run it from an interactive terminal, or authenticate first with: sudo -v"
+    exit 1
+  fi
+
+  sudo -v
+}
+
+require_sudo
+
+# ── [universal] Package index ─────────────────────────────────────────────────
+
+sudo apt-get update
 
 # ── [universal] Base packages ─────────────────────────────────────────────────
 
-sudo apt install -y \
+sudo apt-get install -y \
   git \
   curl \
   wget \
   zsh \
   vim \
-  build-essential \
   ca-certificates \
-  gnupg \
-  libssl-dev \
-  libffi-dev \
-  libbz2-dev \
-  libreadline-dev \
-  libsqlite3-dev
+  gnupg
 
-chsh -s "$(which zsh)"
+ZSH_BIN="$(command -v zsh)"
+if [[ "$SHELL" != "$ZSH_BIN" ]]; then
+  sudo chsh -s "$ZSH_BIN" "$USER"
+fi
 
 # ── [universal] Shell theme ───────────────────────────────────────────────────
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c \
+    "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
+    "" --unattended
+fi
+
+ZSH_CUSTOM_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+P10K_DIR="$ZSH_CUSTOM_DIR/themes/powerlevel10k"
+mkdir -p "$(dirname "$P10K_DIR")"
+if [[ ! -d "$P10K_DIR/.git" ]]; then
+  if [[ -e "$P10K_DIR" ]]; then
+    echo "$P10K_DIR already exists but is not a git checkout; skipping Powerlevel10k clone"
+  else
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$P10K_DIR"
+  fi
+fi
+ln -sf "$DOTFILES_DIR/tool_config/p10k/.p10k.zsh" "$HOME/.p10k.zsh"
 
 # ── [baseline+] Flatpak (preferred package format for GUI apps on Linux) ──────
 
 if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
-  sudo apt install -y flatpak
+  sudo apt-get install -y \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    zlib1g-dev \
+    tk-dev \
+    xz-utils \
+    liblzma-dev \
+    flatpak
+
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
   # GUI apps via Flatpak

@@ -11,8 +11,23 @@ xcode-select --install
 
 # ── [universal] Shell ─────────────────────────────────────────────────────────
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c \
+    "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
+    "" --unattended
+fi
+
+ZSH_CUSTOM_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+P10K_DIR="$ZSH_CUSTOM_DIR/themes/powerlevel10k"
+mkdir -p "$(dirname "$P10K_DIR")"
+if [[ ! -d "$P10K_DIR/.git" ]]; then
+  if [[ -e "$P10K_DIR" ]]; then
+    echo "$P10K_DIR already exists but is not a git checkout; skipping Powerlevel10k clone"
+  else
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$P10K_DIR"
+  fi
+fi
+ln -sf "$DOTFILES_DIR/tool_config/p10k/.p10k.zsh" "$HOME/.p10k.zsh"
 
 # ── [baseline+] Apps (Homebrew Cask — preferred over system packages) ─────────
 
