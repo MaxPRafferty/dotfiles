@@ -29,6 +29,15 @@ if [[ ! -d "$P10K_DIR/.git" ]]; then
 fi
 ln -sf "$DOTFILES_DIR/tool_config/p10k/.p10k.zsh" "$HOME/.p10k.zsh"
 
+# ── [universal] Powerline fonts ───────────────────────────────────────────────
+
+mkdir -p "$HOME/Library/Fonts"
+for font in Regular Bold Italic "Bold Italic"; do
+  curl -fsSL \
+    -o "$HOME/Library/Fonts/MesloLGS NF $font.ttf" \
+    "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20${font// /%20}.ttf"
+done
+
 # ── [baseline+] Apps (Homebrew Cask — preferred over system packages) ─────────
 
 if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then

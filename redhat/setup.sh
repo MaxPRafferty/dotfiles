@@ -20,6 +20,7 @@ sudo dnf install -y \
   gcc-c++ \
   make \
   ca-certificates \
+  fontconfig \
   openssl-devel \
   bzip2-devel \
   libffi-devel \
@@ -48,6 +49,16 @@ if [[ ! -d "$P10K_DIR/.git" ]]; then
   fi
 fi
 ln -sf "$DOTFILES_DIR/tool_config/p10k/.p10k.zsh" "$HOME/.p10k.zsh"
+
+# ── [universal] Powerline fonts ───────────────────────────────────────────────
+
+sudo mkdir -p /usr/share/fonts
+for font in Regular Bold Italic "Bold Italic"; do
+  sudo curl -fsSL \
+    -o "/usr/share/fonts/MesloLGS NF $font.ttf" \
+    "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20${font// /%20}.ttf"
+done
+fc-cache -f
 
 # ── [baseline+] Flatpak (preferred package format for GUI apps on Linux) ──────
 
