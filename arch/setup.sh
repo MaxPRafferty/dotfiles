@@ -20,8 +20,7 @@ sudo pacman -S --noconfirm \
   ca-certificates \
   openssl \
   sqlite \
-  readline \
-  zlib
+  readline
 
 chsh -s "$(which zsh)"
 
