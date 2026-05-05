@@ -30,11 +30,35 @@ set_gsettings_bool() {
   fi
 }
 
+set_gsettings_array() {
+  local schema="$1"
+  local key="$2"
+  local value="$3"
+
+  if command -v gsettings >/dev/null 2>&1 && gsettings writable "$schema" "$key" >/dev/null 2>&1; then
+    gsettings set "$schema" "$key" "$value" || true
+  fi
+}
+
 configure_reverse_scroll_direction() {
   set_gsettings_bool org.gnome.desktop.peripherals.mouse natural-scroll false
   set_gsettings_bool org.gnome.desktop.peripherals.touchpad natural-scroll false
   set_gsettings_bool org.cinnamon.desktop.peripherals.mouse natural-scroll false
   set_gsettings_bool org.cinnamon.desktop.peripherals.touchpad natural-scroll false
+}
+
+configure_window_movement_shortcuts() {
+  set_gsettings_array org.gnome.desktop.wm.keybindings move-to-side-w "['<Super>Left']"
+  set_gsettings_array org.gnome.desktop.wm.keybindings move-to-side-e "['<Super>Right']"
+  set_gsettings_array org.gnome.desktop.wm.keybindings move-to-side-n "['<Super>Up']"
+  set_gsettings_array org.gnome.desktop.wm.keybindings move-to-side-s "['<Super>Down']"
+  set_gsettings_array org.gnome.desktop.wm.keybindings toggle-fullscreen "['<Super>f']"
+
+  set_gsettings_array org.cinnamon.desktop.keybindings.wm push-tile-left "['<Super>Left']"
+  set_gsettings_array org.cinnamon.desktop.keybindings.wm push-tile-right "['<Super>Right']"
+  set_gsettings_array org.cinnamon.desktop.keybindings.wm push-tile-up "['<Super>Up']"
+  set_gsettings_array org.cinnamon.desktop.keybindings.wm push-tile-down "['<Super>Down']"
+  set_gsettings_array org.cinnamon.desktop.keybindings.wm toggle-fullscreen "['<Super>f']"
 }
 
 # ── [universal] Package index ─────────────────────────────────────────────────
@@ -125,6 +149,7 @@ if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   # ── [baseline+] System preferences ───────────────────────────────────────────
 
   configure_reverse_scroll_direction
+  configure_window_movement_shortcuts
 
   # GUI apps via Flatpak
   flatpak install -y flathub com.visualstudio.code
