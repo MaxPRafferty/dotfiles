@@ -64,8 +64,7 @@ sudo pacman -S --noconfirm \
   fontconfig \
   openssl \
   sqlite \
-  readline \
-  zlib
+  readline
 
 chsh -s "$(which zsh)"
 
@@ -139,6 +138,10 @@ if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   # To install Chrome via AUR: yay -S --noconfirm google-chrome
   flatpak install -y flathub org.chromium.Chromium
 
+  # ── [baseline+] Caffeine (prevent screen sleep) ───────────────────────────────
+
+  yay -S --noconfirm caffeine-ng
+
   # ── [baseline+] VSCode settings symlink (Linux path) ──────────────────────────
 
   VSCODE_DIR="$HOME/.config/Code/User"
@@ -173,9 +176,11 @@ if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   # Bun
   curl -fsSL https://bun.sh/install | bash
 
-  # ── [baseline+] Claude Code (requires Node/npm via nvm above) ─────────────────
+  # ── [baseline+] AI CLI tools (require Node/npm via nvm above) ────────────────
 
   npm install -g @anthropic-ai/claude-code
+  npm install -g @google/gemini-cli
+  npm install -g @openai/codex
 fi
 
 # ── [full] Convenience tools ──────────────────────────────────────────────────
