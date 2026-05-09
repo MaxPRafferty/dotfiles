@@ -53,19 +53,9 @@ for font in Regular Bold Italic "Bold Italic"; do
     "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20${font// /%20}.ttf"
 done
 
-# ── [baseline+] Apps (Homebrew Cask — preferred over system packages) ─────────
+# ── [tools+] Runtimes via version managers ────────────────────────────────────
 
-if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
-  # ── [baseline+] System preferences ───────────────────────────────────────────
-
-  defaults write -g com.apple.swipescrolldirection -bool FALSE
-
-  brew install --cask visual-studio-code
-  brew install --cask google-chrome
-  brew install --cask slack
-  brew install --cask rectangle
-
-  # ── [baseline+] Runtimes via version managers (preferred over brew install) ──
+if [[ "$TIER" == "tools" || "$TIER" == "baseline" || "$TIER" == "full" ]]; then
 
   # Node — via nvm
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/HEAD/install.sh | bash
@@ -82,9 +72,24 @@ if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   # Bun
   curl -fsSL https://bun.sh/install | bash
 
-  # ── [baseline+] Claude Code (requires Node/npm via nvm above) ─────────────────
+  # ── [tools+] AI CLI tools (require Node/npm via nvm above) ───────────────────
 
   npm install -g @anthropic-ai/claude-code
+
+fi
+
+# ── [baseline+] Apps (Homebrew Cask — preferred over system packages) ─────────
+
+if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
+
+  # ── [baseline+] System preferences ───────────────────────────────────────────
+
+  defaults write -g com.apple.swipescrolldirection -bool FALSE
+
+  brew install --cask visual-studio-code
+  brew install --cask google-chrome
+  brew install --cask slack
+  brew install --cask rectangle
 
   # ── [baseline+] VSCode extensions ─────────────────────────────────────────────
 
@@ -98,6 +103,7 @@ if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   VSCODE_DIR="$HOME/Library/Application Support/Code/User"
   mkdir -p "$VSCODE_DIR"
   ln -sf "$DOTFILES_DIR/tool_config/vscode/settings.json" "$VSCODE_DIR/settings.json"
+
 fi
 
 # ── [full] Convenience tools ──────────────────────────────────────────────────

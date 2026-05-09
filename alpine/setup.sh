@@ -90,9 +90,10 @@ for font in Regular Bold Italic "Bold Italic"; do
 done
 fc-cache -f
 
-# ── [baseline+] Build deps and Flatpak ────────────────────────────────────────
+# ── [tools+] Build deps and runtimes via version managers ─────────────────────
 
-if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
+if [[ "$TIER" == "tools" || "$TIER" == "baseline" || "$TIER" == "full" ]]; then
+
   # Build tools and pyenv dependencies (Alpine/musl equivalents)
   sudo apk add --no-cache \
     build-base \
@@ -104,26 +105,7 @@ if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
     zlib-dev \
     xz-dev \
     tk \
-    libffi-dev \
-    flatpak \
-    flatpak-xdg-utils
-
-  flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-
-  # GUI apps via Flatpak
-  # Note: Flatpak on Alpine requires a running D-Bus session and XDG portals.
-  # These installs are best run from a desktop session, not a TTY or container.
-  flatpak install -y flathub com.visualstudio.code
-  flatpak install -y flathub com.slack.Slack
-  flatpak install -y flathub org.chromium.Chromium
-
-  # ── [baseline+] VSCode settings symlink (Linux path) ──────────────────────────
-
-  VSCODE_DIR="$HOME/.config/Code/User"
-  mkdir -p "$VSCODE_DIR"
-  ln -sf "$DOTFILES_DIR/tool_config/vscode/settings.json" "$VSCODE_DIR/settings.json"
-
-  # ── [baseline+] Runtimes via version managers ─────────────────────────────────
+    libffi-dev
 
   # Node — via nvm
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/HEAD/install.sh | bash
@@ -143,11 +125,33 @@ if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   # Bun
   curl -fsSL https://bun.sh/install | bash
 
-  # ── [baseline+] AI CLI tools (require Node/npm via nvm above) ────────────────
+  # ── [tools+] AI CLI tools (require Node/npm via nvm above) ───────────────────
 
   npm install -g @anthropic-ai/claude-code
   npm install -g @google/gemini-cli
   npm install -g @openai/codex
+
+fi
+
+# ── [baseline+] Flatpak (preferred package format for GUI apps on Linux) ──────
+
+if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
+  sudo apk add --no-cache flatpak flatpak-xdg-utils
+  flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+  # GUI apps via Flatpak
+  # Note: Flatpak on Alpine requires a running D-Bus session and XDG portals.
+  # These installs are best run from a desktop session, not a TTY or container.
+  flatpak install -y flathub com.visualstudio.code
+  flatpak install -y flathub com.slack.Slack
+  flatpak install -y flathub org.chromium.Chromium
+
+  # ── [baseline+] VSCode settings symlink (Linux path) ──────────────────────────
+
+  VSCODE_DIR="$HOME/.config/Code/User"
+  mkdir -p "$VSCODE_DIR"
+  ln -sf "$DOTFILES_DIR/tool_config/vscode/settings.json" "$VSCODE_DIR/settings.json"
+
 fi
 
 # ── [full] Convenience tools ──────────────────────────────────────────────────
