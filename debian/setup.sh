@@ -165,6 +165,8 @@ if [[ "$TIER" == "tools" || "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   # ── [tools+] AI CLI tools (require Node/npm via nvm above) ───────────────────
 
   npm install -g @anthropic-ai/claude-code
+  npm install -g @google/gemini-cli
+  npm install -g @openai/codex
 
 fi
 
