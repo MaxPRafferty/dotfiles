@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -e
+
+CONTAINER_NAME="dotfiles-sandbox"
+HOST_PORT=8833
+IMAGE="lscr.io/linuxserver/webtop:alpine-xfce"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+exists() {
+  docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"
+}
+
+running() {
+  docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"
+}
+
+if exists; then
+  if running; then
+    echo "Sandbox already running: http://localhost:${HOST_PORT}"
+  else
+    echo "Starting existing sandbox..."
+    docker start "$CONTAINER_NAME"
+    echo "Sandbox running: http://localhost:${HOST_PORT}"
+  fi
+  exit 0
+fi
+
+echo "Creating sandbox container..."
+docker run -d \
+  --name "$CONTAINER_NAME" \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=UTC \
+  -p "${HOST_PORT}:3000" \
+  -v "${DOTFILES_DIR}:/dotfiles:ro" \
+  --shm-size="1gb" \
+  "$IMAGE"
+
+echo "Waiting for container to initialize..."
+until docker exec "$CONTAINER_NAME" test -x /usr/bin/apk 2>/dev/null; do
+  sleep 2
+done
+
+echo "Running tools tier setup (this takes a few minutes)..."
+docker exec \
+  -e TIER=tools \
+  -u abc \
+  "$CONTAINER_NAME" \
+  bash /dotfiles/alpine/setup.sh
+
+echo "Sandbox ready: http://localhost:${HOST_PORT}"
