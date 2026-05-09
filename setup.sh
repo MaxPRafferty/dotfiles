@@ -44,6 +44,9 @@ case "$(uname -s)" in
       *arch*|*manjaro*)
         bash "$DOTFILES_DIR/arch/setup.sh"
         ;;
+      *alpine*)
+        bash "$DOTFILES_DIR/alpine/setup.sh"
+        ;;
       *)
         echo "Unsupported Linux distribution: $ID"
         exit 1
