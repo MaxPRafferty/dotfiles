@@ -24,7 +24,7 @@ Always use non-interactive mode. Construct commands like:
 claude -p "YOUR REVIEW PROMPT HERE"
 ```
 
-Use `--model <model>` if the user requests a specific model (e.g. `sonnet`, `opus`, `haiku`).
+Use `--model opus` by default for reviews. Override if the user requests a different model.
 Use `--output-format json` when you need structured output.
 Use `--max-budget-usd <amount>` to cap spend on expensive reviews.
 

@@ -25,7 +25,11 @@ Always use non-interactive mode with `-p`. Construct commands like:
 claude -p "YOUR PROMPT HERE"
 ```
 
-Use `--model <model>` if the user requests a specific model (e.g. `sonnet`, `opus`, `haiku`).
+Use `--model <model>` to select the appropriate model:
+  - Planning and review tasks → `--model opus`
+  - Implementation/coding tasks → `--model sonnet`
+  - Executing fixes found in review → `--model opus`
+  - Or as the user requests (e.g. `sonnet`, `opus`, `haiku`)
 Use `--output-format json` when you need structured output to parse results programmatically.
 Use `--allowedTools` to restrict the spawned instance's tools if the task warrants it.
 Use `--max-budget-usd <amount>` to cap spend on expensive tasks.
