@@ -84,6 +84,12 @@ if [[ "$SHELL" != "$ZSH_BIN" ]]; then
   sudo chsh -s "$ZSH_BIN" "$USER"
 fi
 
+# ── [universal] Default editor ───────────────────────────────────────────────
+
+sudo update-alternatives --set editor /usr/bin/vim
+grep -qxF 'EDITOR=vim' /etc/environment 2>/dev/null || echo 'EDITOR=vim' | sudo tee -a /etc/environment
+grep -qxF 'VISUAL=vim' /etc/environment 2>/dev/null || echo 'VISUAL=vim' | sudo tee -a /etc/environment
+
 # ── [universal] Shell theme ───────────────────────────────────────────────────
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then

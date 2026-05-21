@@ -76,6 +76,11 @@ if ! command -v yay &>/dev/null; then
   rm -rf /tmp/yay
 fi
 
+# ── [universal] Default editor ───────────────────────────────────────────────
+
+grep -qxF 'EDITOR=vim' /etc/environment 2>/dev/null || echo 'EDITOR=vim' | sudo tee -a /etc/environment
+grep -qxF 'VISUAL=vim' /etc/environment 2>/dev/null || echo 'VISUAL=vim' | sudo tee -a /etc/environment
+
 # ── [universal] Shell theme ───────────────────────────────────────────────────
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then

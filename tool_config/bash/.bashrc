@@ -2,6 +2,9 @@
 
 export PATH="$HOME/.local/bin:$PATH"
 
+export EDITOR=vim
+export VISUAL=vim
+
 if [[ $- == *i* ]] && [[ "$TERM" != "linux" ]] && command -v powerline-shell >/dev/null 2>&1; then
   _update_ps1() {
     PS1="$(powerline-shell $?)"
