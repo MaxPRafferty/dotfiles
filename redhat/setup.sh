@@ -117,6 +117,36 @@ for font in Regular Bold Italic "Bold Italic"; do
 done
 fc-cache -f
 
+# ── [tools+] Runtimes via version managers ────────────────────────────────────
+
+if [[ "$TIER" == "tools" || "$TIER" == "baseline" || "$TIER" == "full" ]]; then
+
+  # Node — via nvm
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/HEAD/install.sh | bash
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+  nvm install --lts
+  nvm use --lts
+
+  # Python — via pyenv
+  curl https://pyenv.run | bash
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+  pyenv install --skip-existing 3
+  pyenv global 3
+
+  # Bun
+  curl -fsSL https://bun.sh/install | bash
+
+  # ── [tools+] AI CLI tools (require Node/npm via nvm above) ───────────────────
+
+  npm install -g @anthropic-ai/claude-code
+  npm install -g @google/gemini-cli
+  npm install -g @openai/codex
+
+fi
+
 # ── [baseline+] Flatpak (preferred package format for GUI apps on Linux) ──────
 
 if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
@@ -149,29 +179,6 @@ if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   # code --install-extension MS-vsliveshare.vsliveshare
   # TODO: flatpak VSCode may need 'flatpak run com.visualstudio.code' alias
 
-  # ── [baseline+] Runtimes via version managers (preferred over dnf install) ────
-
-  # Node — via nvm
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/HEAD/install.sh | bash
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
-  nvm install --lts
-  nvm use --lts
-
-  # Python — via pyenv
-  curl https://pyenv.run | bash
-  export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init -)"
-  pyenv install --skip-existing 3
-  pyenv global 3
-
-  # Bun
-  curl -fsSL https://bun.sh/install | bash
-
-  # ── [baseline+] Claude Code (requires Node/npm via nvm above) ─────────────────
-
-  npm install -g @anthropic-ai/claude-code
 fi
 
 # ── [full] Convenience tools ──────────────────────────────────────────────────

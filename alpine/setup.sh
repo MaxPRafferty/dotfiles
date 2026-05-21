@@ -4,76 +4,46 @@ set -e
 DOTFILES_DIR="${DOTFILES_DIR:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"}"
 TIER="${TIER:-baseline}"
 
-set_gsettings_bool() {
-  local schema="$1"
-  local key="$2"
-  local value="$3"
-
-  if command -v gsettings >/dev/null 2>&1 && gsettings writable "$schema" "$key" >/dev/null 2>&1; then
-    gsettings set "$schema" "$key" "$value" || true
+require_sudo() {
+  if sudo -n true 2>/dev/null; then
+    return
   fi
-}
 
-set_gsettings_array() {
-  local schema="$1"
-  local key="$2"
-  local value="$3"
-
-  if command -v gsettings >/dev/null 2>&1 && gsettings writable "$schema" "$key" >/dev/null 2>&1; then
-    gsettings set "$schema" "$key" "$value" || true
+  if [[ ! -t 0 ]]; then
+    echo "This setup needs sudo for apk and shell configuration."
+    echo "Run it from an interactive terminal, or authenticate first with: sudo -v"
+    exit 1
   fi
+
+  sudo -v
 }
 
-configure_reverse_scroll_direction() {
-  set_gsettings_bool org.gnome.desktop.peripherals.mouse natural-scroll false
-  set_gsettings_bool org.gnome.desktop.peripherals.touchpad natural-scroll false
-  set_gsettings_bool org.cinnamon.desktop.peripherals.mouse natural-scroll false
-  set_gsettings_bool org.cinnamon.desktop.peripherals.touchpad natural-scroll false
-}
+require_sudo
 
-configure_window_movement_shortcuts() {
-  set_gsettings_array org.gnome.desktop.wm.keybindings move-to-side-w "['<Super>Left']"
-  set_gsettings_array org.gnome.desktop.wm.keybindings move-to-side-e "['<Super>Right']"
-  set_gsettings_array org.gnome.desktop.wm.keybindings move-to-side-n "['<Super>Up']"
-  set_gsettings_array org.gnome.desktop.wm.keybindings move-to-side-s "['<Super>Down']"
-  set_gsettings_array org.gnome.desktop.wm.keybindings toggle-fullscreen "['<Super>f']"
+# ── [universal] Package index ─────────────────────────────────────────────────
 
-  set_gsettings_array org.cinnamon.desktop.keybindings.wm push-tile-left "['<Super>Left']"
-  set_gsettings_array org.cinnamon.desktop.keybindings.wm push-tile-right "['<Super>Right']"
-  set_gsettings_array org.cinnamon.desktop.keybindings.wm push-tile-up "['<Super>Up']"
-  set_gsettings_array org.cinnamon.desktop.keybindings.wm push-tile-down "['<Super>Down']"
-  set_gsettings_array org.cinnamon.desktop.keybindings.wm toggle-fullscreen "['<Super>f']"
-}
-
-# ── [universal] System update ─────────────────────────────────────────────────
-
-sudo pacman -Syu --noconfirm
+sudo apk update && sudo apk upgrade
 
 # ── [universal] Base packages ─────────────────────────────────────────────────
 
-sudo pacman -S --noconfirm \
+sudo apk add --no-cache \
   git \
   curl \
   wget \
-  python \
-  python-pipx \
+  python3 \
+  py3-pip \
+  pipx \
   zsh \
   vim \
-  base-devel \
+  bash \
+  shadow \
   ca-certificates \
   fontconfig \
-  openssl \
-  sqlite \
-  readline
+  openssl
 
-chsh -s "$(which zsh)"
-
-# ── [universal] AUR helper (yay) ─────────────────────────────────────────────
-
-if ! command -v yay &>/dev/null; then
-  git clone https://aur.archlinux.org/yay.git /tmp/yay
-  (cd /tmp/yay && makepkg -si --noconfirm)
-  rm -rf /tmp/yay
+ZSH_BIN="$(command -v zsh)"
+if [[ "$SHELL" != "$ZSH_BIN" ]]; then
+  sudo chsh -s "$ZSH_BIN" "$USER"
 fi
 
 # ── [universal] Shell theme ───────────────────────────────────────────────────
@@ -120,9 +90,22 @@ for font in Regular Bold Italic "Bold Italic"; do
 done
 fc-cache -f
 
-# ── [tools+] Runtimes via version managers ────────────────────────────────────
+# ── [tools+] Build deps and runtimes via version managers ─────────────────────
 
 if [[ "$TIER" == "tools" || "$TIER" == "baseline" || "$TIER" == "full" ]]; then
+
+  # Build tools and pyenv dependencies (Alpine/musl equivalents)
+  sudo apk add --no-cache \
+    build-base \
+    musl-dev \
+    openssl-dev \
+    bzip2-dev \
+    readline-dev \
+    sqlite-dev \
+    zlib-dev \
+    xz-dev \
+    tk \
+    libffi-dev
 
   # Node — via nvm
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/HEAD/install.sh | bash
@@ -131,7 +114,7 @@ if [[ "$TIER" == "tools" || "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   nvm install --lts
   nvm use --lts
 
-  # Python — via pyenv
+  # Python — via pyenv (requires build deps above; musl libc is supported)
   curl https://pyenv.run | bash
   export PYENV_ROOT="$HOME/.pyenv"
   export PATH="$PYENV_ROOT/bin:$PATH"
@@ -153,38 +136,21 @@ fi
 # ── [baseline+] Flatpak (preferred package format for GUI apps on Linux) ──────
 
 if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
-  sudo pacman -S --noconfirm flatpak
+  sudo apk add --no-cache flatpak flatpak-xdg-utils
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
-  # ── [baseline+] System preferences ───────────────────────────────────────────
-
-  configure_reverse_scroll_direction
-  configure_window_movement_shortcuts
-
   # GUI apps via Flatpak
+  # Note: Flatpak on Alpine requires a running D-Bus session and XDG portals.
+  # These installs are best run from a desktop session, not a TTY or container.
   flatpak install -y flathub com.visualstudio.code
   flatpak install -y flathub com.slack.Slack
-  # Note: Google Chrome is not on Flathub; using Chromium instead.
-  # To install Chrome via AUR: yay -S --noconfirm google-chrome
   flatpak install -y flathub org.chromium.Chromium
-
-  # ── [baseline+] Caffeine (prevent screen sleep) ───────────────────────────────
-
-  yay -S --noconfirm caffeine-ng
 
   # ── [baseline+] VSCode settings symlink (Linux path) ──────────────────────────
 
   VSCODE_DIR="$HOME/.config/Code/User"
   mkdir -p "$VSCODE_DIR"
   ln -sf "$DOTFILES_DIR/tool_config/vscode/settings.json" "$VSCODE_DIR/settings.json"
-
-  # ── [baseline+] VSCode extensions (run after flatpak VSCode is on PATH) ───────
-
-  # code --install-extension vscodevim.vim
-  # code --install-extension esbenp.prettier-vscode
-  # code --install-extension github.copilot
-  # code --install-extension MS-vsliveshare.vsliveshare
-  # TODO: flatpak VSCode may need 'flatpak run com.visualstudio.code' alias
 
 fi
 
@@ -197,4 +163,4 @@ fi
 
 # ── System configuration ──────────────────────────────────────────────────────
 
-# TODO: add Arch-specific system config
+# TODO: add Alpine-specific system config

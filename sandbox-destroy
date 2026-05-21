@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+CONTAINER_NAME="dotfiles-sandbox"
+
+if ! docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+  echo "No sandbox container found."
+  exit 0
+fi
+
+echo "Destroying sandbox container..."
+docker rm -f "$CONTAINER_NAME"
+echo "Done."
