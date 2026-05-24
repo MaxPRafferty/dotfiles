@@ -194,6 +194,10 @@ if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   # To install Chrome, download the .deb from google.com/chrome manually.
   flatpak install -y flathub org.chromium.Chromium
 
+  # ── [baseline+] Caffeine (prevent screen sleep) ───────────────────────────────
+
+  sudo apt-get install -y caffeine
+
   # ── [baseline+] VSCode settings symlink (Linux path) ──────────────────────────
 
   VSCODE_DIR="$HOME/.config/Code/User"

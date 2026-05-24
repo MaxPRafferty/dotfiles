@@ -92,6 +92,7 @@ if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   brew install --cask google-chrome
   brew install --cask slack
   brew install --cask rectangle
+  brew install --cask caffeine
 
   # ── [baseline+] VSCode extensions ─────────────────────────────────────────────
 
