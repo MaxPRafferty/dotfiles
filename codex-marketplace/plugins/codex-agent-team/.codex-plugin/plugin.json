@@ -1,0 +1,31 @@
+{
+  "name": "codex-agent-team",
+  "version": "0.1.0",
+  "description": "Codex-driven engineering agent team prompts for local development.",
+  "author": {
+    "name": "Max"
+  },
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "agents",
+    "development"
+  ],
+  "interface": {
+    "displayName": "Codex Agent Team",
+    "shortDescription": "Local Codex-first engineering agents",
+    "longDescription": "Installs a manager and specialist agents that delegate through Codex and Gemini CLIs. Former Claude responsibilities are routed to Codex senior agents.",
+    "developerName": "Max",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use the manager agent to coordinate this implementation.",
+      "Use codex-senior-reviewer to review this changeset.",
+      "Use codex-senior to implement this critical task."
+    ],
+    "brandColor": "#10A37F"
+  }
+}
