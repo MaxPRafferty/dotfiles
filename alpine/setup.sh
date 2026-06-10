@@ -151,6 +151,10 @@ if [[ "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   flatpak install -y flathub com.slack.Slack
   flatpak install -y flathub org.chromium.Chromium
 
+  # ── [baseline+] Caffeine (prevent screen sleep) ───────────────────────────────
+
+  sudo apk add --no-cache caffeine
+
   # ── [baseline+] VSCode settings symlink (Linux path) ──────────────────────────
 
   VSCODE_DIR="$HOME/.config/Code/User"
