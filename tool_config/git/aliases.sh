@@ -14,3 +14,10 @@ git config --global alias.ls \
 #   - fetches latest dev and creates the new branch from it
 git config --global alias.nb \
   "!f() { git branch -D zztmpzz || true && git checkout -b zztmpzz && git branch -D dev || true && git fetch && git checkout dev && git checkout -b \$1; }; f"
+
+# fpx <name>: force-push the current HEAD as <name> to origin without touching the working tree
+#   - deletes the local copy of <name> (if it exists) then re-creates it at current HEAD
+#   - uses git branch (not checkout) so the working tree and index are never modified
+#   - force-pushes <name> to origin; does not alter the currently checked-out branch
+git config --global alias.fpx \
+  "!f() { git branch -D \$1 2>/dev/null || true && git branch \$1 && git push --force origin \$1; }; f"
