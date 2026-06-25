@@ -22,6 +22,10 @@ mkdir -p "$HOME/.ssh"
 chmod 700 "$HOME/.ssh"
 ln -sf "$DOTFILES_DIR/tool_config/ssh/config" "$HOME/.ssh/config"
 
+# ── Git aliases (universal) ───────────────────────────────────────────────────
+
+bash "$DOTFILES_DIR/tool_config/git/aliases.sh"
+
 # ── Dispatch to system-specific setup ────────────────────────────────────────
 
 case "$(uname -s)" in
