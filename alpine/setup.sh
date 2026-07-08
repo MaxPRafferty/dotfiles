@@ -43,7 +43,7 @@ sudo apk add --no-cache \
 
 ZSH_BIN="$(command -v zsh)"
 if [[ "$SHELL" != "$ZSH_BIN" ]]; then
-  sudo chsh -s "$ZSH_BIN" "$USER"
+  sudo chsh -s "$ZSH_BIN" "$(id -un)"
 fi
 
 # ── [universal] Default editor ───────────────────────────────────────────────
@@ -112,12 +112,13 @@ if [[ "$TIER" == "tools" || "$TIER" == "baseline" || "$TIER" == "full" ]]; then
     tk \
     libffi-dev
 
-  # Node — via nvm
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/HEAD/install.sh | bash
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
-  nvm install --lts
-  nvm use --lts
+  # Node — via apk (musl-native). Unlike other tiers/systems we don't use nvm
+  # here: on Alpine (musl libc) nvm's prebuilt binaries are glibc-only and won't
+  # run (their ELF interpreter /lib/ld-linux-* is absent), and building from
+  # source OOM-kills cc1plus in a memory-limited container (V8 compile spawns
+  # ~one heavy compiler per core). apk ships musl-native nodejs/npm, so we take
+  # the packaged runtime here and give up nvm version-switching in the sandbox.
+  sudo apk add --no-cache nodejs npm
 
   # Python — via pyenv (requires build deps above; musl libc is supported)
   curl https://pyenv.run | bash
@@ -130,11 +131,13 @@ if [[ "$TIER" == "tools" || "$TIER" == "baseline" || "$TIER" == "full" ]]; then
   # Bun
   curl -fsSL https://bun.sh/install | bash
 
-  # ── [tools+] AI CLI tools (require Node/npm via nvm above) ───────────────────
+  # ── [tools+] AI CLI tools (require Node/npm via apk above) ───────────────────
+  # apk's npm uses a root-owned global prefix (/usr/lib/node_modules), so these
+  # global installs need sudo (the nvm-based tiers on other systems do not).
 
-  npm install -g @anthropic-ai/claude-code
-  npm install -g @google/gemini-cli
-  npm install -g @openai/codex
+  sudo npm install -g @anthropic-ai/claude-code
+  sudo npm install -g @google/gemini-cli
+  sudo npm install -g @openai/codex
 
 fi
 

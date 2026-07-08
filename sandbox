@@ -3,7 +3,7 @@ set -e
 
 CONTAINER_NAME="dotfiles-sandbox"
 HOST_PORT=8833
-IMAGE="lscr.io/linuxserver/webtop:alpine-xfce"
+IMAGE="lscr.io/linuxserver/webtop:alpine-mate"
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 exists() {
@@ -37,15 +37,31 @@ docker run -d \
   "$IMAGE"
 
 echo "Waiting for container to initialize..."
-until docker exec "$CONTAINER_NAME" test -x /usr/bin/apk 2>/dev/null; do
-  sleep 2
+# The LinuxServer image provisions the 'abc' user, its wheel-group membership,
+# and sudoers via s6 init *after* the container starts (not just apk, which is
+# baked into the image layer and present instantly). While it does so it briefly
+# flaps — abc exists but can't yet sudo. Require several consecutive successful
+# sudo checks so we clear that window before the setup below, which relies on
+# passwordless sudo throughout. s6 init runs once at startup, so it won't reopen
+# the window during the long setup that follows.
+ready=0
+until [ "$ready" -ge 3 ]; do
+  if docker exec -u abc "$CONTAINER_NAME" sudo -n true >/dev/null 2>&1; then
+    ready=$((ready + 1))
+  else
+    ready=0
+  fi
+  sleep 1
 done
 
-echo "Running tools tier setup (this takes a few minutes)..."
+echo "Linking dotfiles and running tools tier setup (this takes a few minutes)..."
+# Run the root setup.sh (not alpine/setup.sh directly) so the sandbox gets the
+# dotfile symlinks — zsh/p10k/git aliases/etc. — before dispatching to the
+# Alpine tier install. Symlinks land in the writable $HOME and point at the
+# read-only /dotfiles mount, so the RO mount is fine. TIER is the positional arg.
 docker exec \
-  -e TIER=tools \
   -u abc \
   "$CONTAINER_NAME" \
-  bash /dotfiles/alpine/setup.sh
+  bash /dotfiles/setup.sh tools
 
 echo "Sandbox ready: http://localhost:${HOST_PORT}"

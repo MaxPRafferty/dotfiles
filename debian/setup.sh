@@ -81,7 +81,7 @@ sudo apt-get install -y \
 
 ZSH_BIN="$(command -v zsh)"
 if [[ "$SHELL" != "$ZSH_BIN" ]]; then
-  sudo chsh -s "$ZSH_BIN" "$USER"
+  sudo chsh -s "$ZSH_BIN" "$(id -un)"
 fi
 
 # ── [universal] Default editor ───────────────────────────────────────────────
